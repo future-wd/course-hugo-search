@@ -1,6 +1,6 @@
-# Tutorial - Minify HTML with HUGO
+# Course - Add search feature to HUGO
 
-Watch the video at <https://youtu.be/lRyZ5z9xaC8>
+[Complete the course here]()
 
 [Watch my full length skillshare courses here](https://skl.sh/3rsfq4y). You get 1 month free, to watch my courses using my referral link.
 
