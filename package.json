@@ -15,6 +15,7 @@
     "postinstall": "hugo-installer --version otherDependencies.hugo --extended --destination node_modules/.bin/hugo"
   },
   "dependencies": {
+    "fuse.js": "^6.5.3"
   },
   "otherDependencies": {
     "hugo": "0.97.3"
