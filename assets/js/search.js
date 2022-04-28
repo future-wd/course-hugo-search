@@ -69,14 +69,8 @@ function search(data, pattern) {
   };
   // new fuse instance
   const fuse = new Fuse(data, options);
-  // JSON search results
-  const JSONresults = fuse.search(pattern);
-  // convert JSON to object
-  const results = JSON.stringify(JSONresults);
-  const resultsO = JSON.parse(JSONresults);
-  console.log(JSONresults)
-  // call resuljts function
-   showResults(results);
+  const results = fuse.search(pattern);
+  console.log(`RESULTS: ${JSON.stringify(results)}`);
 }
 
 
