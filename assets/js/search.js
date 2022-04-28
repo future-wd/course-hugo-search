@@ -72,4 +72,5 @@ function search(data, pattern) {
   const JSONresults = fuse.search(pattern);
   const results = JSON.stringify(JSONresults);
 
+  console.log(`RESULTS: ${results}`);
 }
