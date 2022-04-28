@@ -69,8 +69,34 @@ function search(data, pattern) {
   };
   // new fuse instance
   const fuse = new Fuse(data, options);
+  // search results (object)
   const results = fuse.search(pattern);
-  console.log(`RESULTS: ${JSON.stringify(results)}`);
+  showResults(results);
 }
-
+// ***********************
+// show results
+//
+function showResults(results) {
+  if (!results.length) { // no results
+    searchResults.innerHTML = 'No results found';
+  } else { // results found
+    searchResults.innerHTML = ''; // clear DIV
+    results.forEach(element => {
+      const {title, summary, permalink, content, companies, species} = element.item
+      const output = `
+      <div class="pb-3">
+        <div class="row">
+          <div class="col">
+            <h3 class="mb-1"><a href="${permalink}" class="text-decoration-none">${title}</a></h3>
+            <div class="mb-1"><a href="${permalink}" class="link-dark">${permalink}</a></div>
+            <div class="mb-1">Company: ${companies}</div>
+            <div class="mb-1">Species: ${species}</div>
+            <div class="lh-1">${summary}</div>
+          </div>
+        </div>
+      </div>`;
+      searchResults.innerHTML += output;
+    });
+  }
+}
 
