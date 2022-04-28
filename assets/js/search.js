@@ -79,15 +79,4 @@ function search(data, pattern) {
    showResults(results);
 }
 
-function showResults(results) {
-  if (!results.length) { // no results
-    searchResults.innerHTML = 'No results found.';
-  } else { //results found
-    searchResults.innerHTML = ''
-    results.forEach((value, key) => {
-      const output = value;
-      searchResults.innerHTML += output;
-    })
-  }
 
-}
