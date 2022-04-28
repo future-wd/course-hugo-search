@@ -3,17 +3,20 @@ import Fuse from 'fuse.js/dist/fuse.basic.esm.js'
 const searchInput = document.getElementById('js-searchInput');
 const searchResults = document.getElementById('js-searchResults');
 
-const searchIndex = `
-  {{ $index := newScratch }}
-  {{ $pages := .Site.RegularPages }}
-  {{ $pages = where $pages "Params.private" "!=" "true" }}
-  {{ $index.Set "index" slice }}
-  {{ range $pages }}
-    {{ $index.Add "index" (dict "title" .Title "permalink" .Permalink "images" .Params.images "content" .Plain "summary" .Summary "companies" .Params.companies "species" .Params.species )}}
-  {{ end }}
-  {{ $index.Get "index" | jsonify }}
- `
-console.log(JSON.stringify(searchIndex));
+// ***********************
+// search index (JSON)
+//
+// create search index with hugo scratch
+{{- $scratch := newScratch -}}
+{{- $scratch.Set "index" slice -}}
+{{- $pages := .Site.RegularPages -}}
+{{- $pages = where $pages "Params.private" "!=" "true" -}}
+{{- range $pages -}}
+  {{- $scratch.Add "index" (dict "title" .Title "summary" .Summary "content" .Plain "companies" .Params.companies "species" .Params.species "permalink" .Permalink) -}}
+{{- end -}}
+// write json data to file
+const searchIndex = {{ $scratch.Get "index" | jsonify }};
+console.log(`JSON DATA: ${JSON.stringify(searchIndex)}`);
 
 // ***********************
 // search params function
