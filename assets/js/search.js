@@ -26,13 +26,12 @@ if (searchQuery) {
 }
 
 const searchIndex = `
-  {{ $index := newScratch }}
-  {{ $pages := .Site.RegularPages }}
-  {{ $pages = where $pages "Params.private" "!=" "true" }}
-  {{ $index.Set "index" slice }}
-  {{ range $pages }}
-    {{ $index.Add "index" (dict "title" .Title "permalink" .Permalink "images" .Params.images "content" .Plain "summary" .Summary "companies" .Params.companies "species" .Params.species )}}
-  {{ end }}
-  {{ $index.Get "index" | jsonify }}
- `
+  {{- $index := newScratch -}}
+  {{- $pages := .Site.RegularPages -}}
+  {{- $pages = where $pages "Params.private" "!=" "true" -}}
+  {{- $index.Set "index" slice -}}
+  {{- range $pages -}}
+    {{- $index.Add "index" (dict "title" .Title "permalink" .Permalink "images" .Params.images "content" .Plain "summary" .Summary "companies" .Params.companies "species" .Params.species ) -}}
+  {{- end -}}
+  {{- $index.Get "index" | jsonify -}}`
 console.log(JSON.stringify(searchIndex));
