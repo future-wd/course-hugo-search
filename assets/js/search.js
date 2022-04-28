@@ -5,8 +5,23 @@ const searchResults = document.getElementById('js-searchResults');
 
 
 // ***********************
-// search params function
+// search index (JSON)
+//
+// create search index with hugo scratch
+{{- $scratch := newScratch -}}
+{{- $scratch.Set "index" slice -}}
+{{- $pages := .Site.RegularPages -}}
+{{- $pages = where $pages "Params.private" "!=" "true" -}}
+{{- range $pages -}}
+  {{- $scratch.Add "index" (dict "title" .Title "summary" .Summary "content" .Plain "companies" .Params.companies "species" .Params.species "permalink" .Permalink) -}}
+{{- end -}}
+// write json data to file
+const searchIndex = {{ $scratch.Get "index" | jsonify }};
+console.log(`JSON DATA: ${JSON.stringify(searchIndex)}`);
 
+// ***********************
+// search params function
+//
 function params(name) {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -25,13 +40,5 @@ if (searchQuery) {
   searchResults.innerHTML = 'Please input your search into the search box above.';
 }
 
-const searchIndex = `
-  {{- $index := newScratch -}}
-  {{- $pages := .Site.RegularPages -}}
-  {{- $pages = where $pages "Params.private" "!=" "true" -}}
-  {{- $index.Set "index" slice -}}
-  {{- range $pages -}}
-    {{- $index.Add "index" (dict "title" .Title "permalink" .Permalink "images" .Params.images "content" .Plain "summary" .Summary "companies" .Params.companies "species" .Params.species ) -}}
-  {{- end -}}
-  {{- $index.Get "index" | jsonify -}}`
-console.log(JSON.stringify(searchIndex));
+
+
