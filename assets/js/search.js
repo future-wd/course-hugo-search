@@ -36,7 +36,7 @@ if (searchQuery) {
   searchInput.value = searchQuery;
   searchResults.innerHTML = 'Loading...';
   // run the search
-  search(searchIndex);
+  search(searchIndex, searchQuery);
 } else { // no search query
   searchResults.innerHTML = 'Please input your search into the search box above.';
 }
@@ -45,7 +45,7 @@ if (searchQuery) {
 // ***********************
 // run search
 //
-function search(data) {
+function search(data, pattern) {
   const options = {
     // // isCaseSensitive: false,
     // // includeScore: false,
@@ -60,18 +60,16 @@ function search(data) {
     // ignoreLocation: true,
     // // ignoreFieldNorm: false,
     // // fieldNormWeight: 1,
-    // keys: [
-    //   "title", // default weight 1
-    //   {name: "summary", weight: 0.8},
-    //   { name: "content", weight: 0.6 },
-    //   { name: "companies", weight: 0.4},
-    //   { name: "species", weight: 0.4},
-    // ]
+    keys: [
+      "title", // default weight 1
+      {name: "summary", weight: 0.8},
+      { name: "content", weight: 0.6 },
+      { name: "companies", weight: 0.4},
+      { name: "species", weight: 0.4},
+     ]
   };
-  // create new fuse instance
   const fuse = new Fuse(data, options);
-  // return results
-  const results = fuse.search(searchQuery)
+  const JSONresults = fuse.search(pattern);
+  const results = JSON.stringify(JSONresults);
 
-  console.log(results);
 }
