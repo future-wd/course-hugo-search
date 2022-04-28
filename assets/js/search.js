@@ -16,7 +16,6 @@ const searchResults = document.getElementById('js-searchResults');
 {{- end -}}
 // write json data to file
 const searchIndex = {{ $scratch.Get "index" | jsonify }};
-console.log(`JSON DATA: ${JSON.stringify(searchIndex)}`);
 
 // ***********************
 // search params function
@@ -68,9 +67,27 @@ function search(data, pattern) {
       { name: "species", weight: 0.4},
      ]
   };
+  // new fuse instance
   const fuse = new Fuse(data, options);
+  // JSON search results
   const JSONresults = fuse.search(pattern);
+  // convert JSON to object
   const results = JSON.stringify(JSONresults);
+  const resultsO = JSON.parse(JSONresults);
+  console.log(JSONresults)
+  // call resuljts function
+   showResults(results);
+}
 
-  console.log(`RESULTS: ${results}`);
+function showResults(results) {
+  if (!results.length) { // no results
+    searchResults.innerHTML = 'No results found.';
+  } else { //results found
+    searchResults.innerHTML = ''
+    results.forEach((value, key) => {
+      const output = value;
+      searchResults.innerHTML += output;
+    })
+  }
+
 }
