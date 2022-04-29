@@ -12,7 +12,17 @@ const searchResults = document.getElementById('js-searchResults');
 {{- $pages := .Site.RegularPages -}}
 {{- $pages = where $pages "Params.private" "!=" "true" -}}
 {{- range $pages -}}
-  {{- $scratch.Add "index" (dict "title" .Title "summary" .Summary "content" .Plain "companies" .Params.companies "species" .Params.species "permalink" .Permalink) -}}
+  {{- $companiesTerms := .GetTerms "companies" -}}
+  {{- $companies := slice -}}
+  {{- range $companiesTerms -}}
+    {{- $companies = $companies | append (dict "title" (.Title | humanize | title ) "relPermalink" .RelPermalink )}}
+  {{- end -}}
+  {{- $speciesTerms := .GetTerms "species" -}}
+  {{- $species := slice -}}
+  {{- range $speciesTerms -}}
+    {{- $species = $species | append (dict "title" (.Title | humanize | title ) "relPermalink" .RelPermalink )}}
+  {{- end -}}
+  {{- $scratch.Add "index" (dict "title" .Title "summary" .Summary "content" .Plain "companies" $companies "species" $species "permalink" .Permalink) -}}
 {{- end -}}
 // write json data to file
 const searchIndex = {{ $scratch.Get "index" | jsonify }};
@@ -82,15 +92,34 @@ function showResults(results) {
   } else { // results found
     searchResults.innerHTML = ''; // clear DIV
     results.forEach(element => {
-      const {title, summary, permalink, content, companies, species} = element.item
+      const {title, summary, permalink, content, companies, species} = element.item;
+      function taxonomyHTML(taxonomy, titleSingle, titlePlural) {
+        let taxonomyHTML = '';
+        if (taxonomy.length) { // terms present
+          // create an array of term links
+          const taxonomyArray = Array.from(taxonomy, value => {
+            return `<a href="${value.relPermalink}">${value.title}</a>`;
+          })
+          // pluralise title
+          let taxonomyTitle = titleSingle;
+          if (titlePlural && (taxonomyArray.length >= 2)) {
+            taxonomyTitle = titlePlural
+          }
+          // generate HTML
+          taxonomyHTML = `
+          <div class="pb-1">
+            <small>${taxonomyTitle}: ${taxonomyArray.join(', ')}</small>`;
+        }
+        return taxonomyHTML;
+      }
       const output = `
       <div class="pb-3">
         <div class="row">
           <div class="col">
             <h3 class="mb-1"><a href="${permalink}" class="text-decoration-none">${title}</a></h3>
             <div class="mb-1"><a href="${permalink}" class="link-dark">${permalink}</a></div>
-            <div class="mb-1">Company: ${companies}</div>
-            <div class="mb-1">Species: ${species}</div>
+            ${taxonomyHTML(companies, 'Company', 'Companies')}
+            ${taxonomyHTML(species,'Species')}
             <div class="lh-1">${summary}</div>
           </div>
         </div>
