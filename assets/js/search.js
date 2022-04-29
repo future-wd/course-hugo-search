@@ -4,37 +4,33 @@ const searchInput = document.getElementById('js-searchInput');
 const searchResults = document.getElementById('js-searchResults');
 
 // ***********************
-// search index (JSON)
+// GET json search index with XHR
 //
-// create search index with hugo scratch
-{{- $scratch := newScratch -}}
-{{- $scratch.Set "index" slice -}}
-{{- $pages := .Site.RegularPages -}}
-{{- $pages = where $pages "Params.private" "!=" "true" -}}
-{{- range $pages -}}
-  {{-  $image := "" -}}
-  {{- if .Params.images -}}
-    {{- if ge (len .Params.images) 1 -}}
-      {{- with .Resources.GetMatch (index .Params.images 0) -}}
-        {{- $image = .Resize "200x" -}}
-        {{- $image = $image.RelPermalink -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-  {{- $companiesTerms := .GetTerms "companies" -}}
-  {{- $companies := slice -}}
-  {{- range $companiesTerms -}}
-    {{- $companies = $companies | append (dict "title" (.Title | humanize | title ) "relPermalink" .RelPermalink )}}
-  {{- end -}}
-  {{- $speciesTerms := .GetTerms "species" -}}
-  {{- $species := slice -}}
-  {{- range $speciesTerms -}}
-    {{- $species = $species | append (dict "title" (.Title | humanize | title ) "relPermalink" .RelPermalink )}}
-  {{- end -}}
-  {{- $scratch.Add "index" (dict "title" .Title "image" $image "summary" .Summary "content" .Plain "companies" $companies "species" $species "permalink" .Permalink) -}}
-{{- end -}}
-// write json data to file
-const searchIndex = {{ $scratch.Get "index" | jsonify }};
+function getJSON(path, callback, errorCallback) {
+  // 1. new instance
+  const xhr = new XMLHttpRequest();
+  // 2. open and configure
+  xhr.open('GET', path);
+  // 3. send
+  xhr.send();
+  // 4. conditional after data is sent and received
+  xhr.onloadend = () => {
+    if (xhr.status === 200) { //success
+      const data = JSON.parse(xhr.responseText);
+      if (callback) {
+        callback(data);
+      }
+    } else { //fail
+      errorCallback();
+    }
+  }
+}
+
+function getError() {
+  searchResults.innerHTML = 'Connectivity Error';
+}
+
+
 
 // ***********************
 // search params function
@@ -54,7 +50,8 @@ if (searchQuery) {
   searchInput.value = searchQuery;
   searchResults.innerHTML = 'Loading...';
   // run the search
-  search(searchIndex, searchQuery);
+  getJSON('/searchIndex/index.json', search, getError);
+  //search(searchIndex, searchQuery);
 } else { // no search query
   searchResults.innerHTML = 'Please input your search into the search box above.';
 }
@@ -63,7 +60,7 @@ if (searchQuery) {
 // ***********************
 // run search
 //
-function search(data, pattern) {
+function search(data) {
   const options = {
     // // isCaseSensitive: false,
     // // includeScore: false,
@@ -89,7 +86,7 @@ function search(data, pattern) {
   // new fuse instance
   const fuse = new Fuse(data, options);
   // search results (object)
-  const results = fuse.search(pattern);
+  const results = fuse.search(searchQuery);
   showResults(results);
 }
 // ***********************
