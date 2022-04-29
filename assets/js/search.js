@@ -6,7 +6,7 @@ const searchResults = document.getElementById('js-searchResults');
 // ***********************
 // GET json search index with XHR
 //
-function getJSON(path, callback, errorCallback) {
+function getJSON(path, callback, errorCallback, timeout = 4000) {
   // 1. new instance
   const xhr = new XMLHttpRequest();
   // 2. open and configure
@@ -24,6 +24,8 @@ function getJSON(path, callback, errorCallback) {
       errorCallback();
     }
   }
+  // 5. configure timout
+  xhr.timeout = timeout; // in miliseconds
 }
 
 function getError() {
