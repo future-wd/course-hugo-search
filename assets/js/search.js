@@ -12,6 +12,15 @@ const searchResults = document.getElementById('js-searchResults');
 {{- $pages := .Site.RegularPages -}}
 {{- $pages = where $pages "Params.private" "!=" "true" -}}
 {{- range $pages -}}
+  {{-  $image := "" -}}
+  {{- if .Params.images -}}
+    {{- if ge (len .Params.images) 1 -}}
+      {{- with .Resources.GetMatch (index .Params.images 0) -}}
+        {{- $image = .Resize "200x" -}}
+        {{- $image = $image.RelPermalink -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
   {{- $companiesTerms := .GetTerms "companies" -}}
   {{- $companies := slice -}}
   {{- range $companiesTerms -}}
@@ -22,7 +31,7 @@ const searchResults = document.getElementById('js-searchResults');
   {{- range $speciesTerms -}}
     {{- $species = $species | append (dict "title" (.Title | humanize | title ) "relPermalink" .RelPermalink )}}
   {{- end -}}
-  {{- $scratch.Add "index" (dict "title" .Title "summary" .Summary "content" .Plain "companies" $companies "species" $species "permalink" .Permalink) -}}
+  {{- $scratch.Add "index" (dict "title" .Title "image" $image "summary" .Summary "content" .Plain "companies" $companies "species" $species "permalink" .Permalink) -}}
 {{- end -}}
 // write json data to file
 const searchIndex = {{ $scratch.Get "index" | jsonify }};
@@ -92,7 +101,7 @@ function showResults(results) {
   } else { // results found
     searchResults.innerHTML = ''; // clear DIV
     results.forEach(element => {
-      const {title, summary, permalink, content, companies, species} = element.item;
+      const {title, image, summary, permalink, content, companies, species} = element.item;
       function taxonomyHTML(taxonomy, titleSingle, titlePlural) {
         let taxonomyHTML = '';
         if (taxonomy.length) { // terms present
@@ -115,7 +124,10 @@ function showResults(results) {
       const output = `
       <div class="pb-3">
         <div class="row">
-          <div class="col">
+          <div class="col-sm-4 col-md-2">
+            <img src="${image}" class="img-fluid">
+          </div>
+          <div class="col-sm-8 col-md-10">
             <h3 class="mb-1"><a href="${permalink}" class="text-decoration-none">${title}</a></h3>
             <div class="mb-1"><a href="${permalink}" class="link-dark">${permalink}</a></div>
             ${taxonomyHTML(companies, 'Company', 'Companies')}
