@@ -3,7 +3,7 @@ title: Futurama Characters
 # alternate copyright company text
 copyright: Web Design Inc.
 # controls number of pages displayed on list pages
-paginate: 5
+paginate: 10
 # controls the summary length on list pages
 summaryLength: 7
 # this is required so that Hugo will render markdown to HTML
