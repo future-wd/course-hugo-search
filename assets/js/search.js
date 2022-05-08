@@ -67,7 +67,7 @@ function search(data) {
     // // isCaseSensitive: false,
     // // includeScore: false,
     // // shouldSort: true,
-    // // includeMatches: false,
+    includeMatches: true,
     // findAllMatches: true,
     // minMatchCharLength: 2,
     // // location: 0,
@@ -89,8 +89,86 @@ function search(data) {
   const fuse = new Fuse(data, options);
   // search results (object)
   const results = fuse.search(searchQuery);
-  showResults(results);
+  console.log(`original results: ${JSON.stringify(results)}`);
+  //showResults(results);
+  //const res = highlight(fuse.search(text)); // array of items with highlighted fields
+  showResults(highlight(results));
 }
+
+function generateHighlightedText(text, regions) {
+  if(!regions) return text;
+
+  var content = '', nextUnhighlightedRegionStartingIndex = 0;
+
+  regions.forEach(function(region) {
+    content += '' +
+      text.substring(nextUnhighlightedRegionStartingIndex, region[0]) +
+      '<span class="highlight">' +
+        text.substring(region[0], region[1]) +
+      '</span>' +
+    '';
+    nextUnhighlightedRegionStartingIndex = region[1];
+  });
+
+  content += text.substring(nextUnhighlightedRegionStartingIndex);
+
+  return content;
+};
+
+const highlight = (fuseSearchResult, highlightClassName = 'highlight') => {
+  const set = (obj, path, value) => {
+      const pathValue = path.split('.');
+      let i;
+
+      for (i = 0; i < pathValue.length - 1; i++) {
+        obj = obj[pathValue[i]];
+      }
+
+      obj[pathValue[i]] = value;
+  };
+
+  const generateHighlightedText = (inputText, regions = []) => {
+    let content = '';
+    let nextUnhighlightedRegionStartingIndex = 0;
+
+    regions.forEach(region => {
+      const lastRegionNextIndex = region[1] + 1;
+
+      content += [
+        inputText.substring(nextUnhighlightedRegionStartingIndex, region[0]),
+        `<span class="${highlightClassName}">`,
+        inputText.substring(region[0], lastRegionNextIndex),
+        '</span>',
+      ].join('');
+
+      nextUnhighlightedRegionStartingIndex = lastRegionNextIndex;
+    });
+
+    content += inputText.substring(nextUnhighlightedRegionStartingIndex);
+
+    return content;
+  };
+
+  const test =  fuseSearchResult
+    .filter(({ matches }) => matches && matches.length)
+    .map(({ item, matches }) => {
+      const highlightedItem = { ...item };
+
+      matches.forEach((match) => {
+        set(highlightedItem, match.key, generateHighlightedText(match.value, match.indices));
+      });
+
+     
+      return highlightedItem;
+    });
+    console.log(`highlited: ${JSON.stringify(test)}`)
+};
+
+// usage:
+
+//const res = highlight(fuse.search(text)); // array of items with highlighted fields
+
+
 // ***********************
 // show results
 //
@@ -100,7 +178,8 @@ function showResults(results) {
   } else { // results found
     searchResults.innerHTML = ''; // clear DIV
     results.forEach(element => {
-      const {title, image, summary, permalink, content, companies, species} = element.item;
+      //const {title, image, summary, permalink, content, companies, species} = element.item;
+      const {title, image, summary, permalink, content, companies, species} = element;
       function taxonomyHTML(taxonomy, titleSingle, titlePlural) {
         let taxonomyHTML = '';
         if (taxonomy.length) { // terms present
