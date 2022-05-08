@@ -69,7 +69,7 @@ function search(data) {
     // // shouldSort: true,
     includeMatches: true,
     // findAllMatches: true,
-    // minMatchCharLength: 2,
+    minMatchCharLength: 2,
     // // location: 0,
     // threshold: 0.4,
     // // distance: 100,
@@ -115,7 +115,7 @@ function generateHighlightedText(text, regions) {
   return content;
 };
 
-const highlight = (fuseSearchResult, highlightClassName = 'highlight') => {
+const highlight = (fuseSearchResult, highlightClassName = 'mark') => {
   const set = (obj, path, value) => {
       const pathValue = path.split('.');
       let i;
@@ -149,7 +149,7 @@ const highlight = (fuseSearchResult, highlightClassName = 'highlight') => {
     return content;
   };
 
-  const test =  fuseSearchResult
+  return  fuseSearchResult
     .filter(({ matches }) => matches && matches.length)
     .map(({ item, matches }) => {
       const highlightedItem = { ...item };
@@ -161,7 +161,7 @@ const highlight = (fuseSearchResult, highlightClassName = 'highlight') => {
      
       return highlightedItem;
     });
-    console.log(`highlited: ${JSON.stringify(test)}`)
+    //console.log(`highlited: ${JSON.stringify(test)}`)
 };
 
 // usage:
