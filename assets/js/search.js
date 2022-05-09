@@ -95,25 +95,6 @@ function search(data) {
   showResults(highlight(results));
 }
 
-function generateHighlightedText(text, regions) {
-  if(!regions) return text;
-
-  var content = '', nextUnhighlightedRegionStartingIndex = 0;
-
-  regions.forEach(function(region) {
-    content += '' +
-      text.substring(nextUnhighlightedRegionStartingIndex, region[0]) +
-      '<span class="highlight">' +
-        text.substring(region[0], region[1]) +
-      '</span>' +
-    '';
-    nextUnhighlightedRegionStartingIndex = region[1];
-  });
-
-  content += text.substring(nextUnhighlightedRegionStartingIndex);
-
-  return content;
-};
 
 const highlight = (fuseSearchResult, highlightClassName = 'mark') => {
   const set = (obj, path, value) => {
@@ -127,24 +108,24 @@ const highlight = (fuseSearchResult, highlightClassName = 'mark') => {
       obj[pathValue[i]] = value;
   };
 
-  const generateHighlightedText = (inputText, regions = []) => {
+  const highlightText = (inputText, regions = []) => {
     let content = '';
-    let nextUnhighlightedRegionStartingIndex = 0;
+    let startIndex = 0;
 
     regions.forEach(region => {
       const lastRegionNextIndex = region[1] + 1;
 
       content += [
-        inputText.substring(nextUnhighlightedRegionStartingIndex, region[0]),
+        inputText.substring(startIndex, region[0]),
         `<span class="${highlightClassName}">`,
         inputText.substring(region[0], lastRegionNextIndex),
         '</span>',
       ].join('');
 
-      nextUnhighlightedRegionStartingIndex = lastRegionNextIndex;
+      startIndex = lastRegionNextIndex;
     });
 
-    content += inputText.substring(nextUnhighlightedRegionStartingIndex);
+    content += inputText.substring(startIndex);
 
     return content;
   };
@@ -155,13 +136,11 @@ const highlight = (fuseSearchResult, highlightClassName = 'mark') => {
       const highlightedItem = { ...item };
 
       matches.forEach((match) => {
-        set(highlightedItem, match.key, generateHighlightedText(match.value, match.indices));
+        set(highlightedItem, match.key, highlightText(match.value, match.indices));
       });
 
-     
       return highlightedItem;
     });
-    //console.log(`highlited: ${JSON.stringify(test)}`)
 };
 
 // usage:
