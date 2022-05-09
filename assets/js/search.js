@@ -46,19 +46,19 @@ if (searchQuery) {
 //
 function search(data, pattern) {
   const options = {
-    // // isCaseSensitive: false,
-    // // includeScore: false,
-    // // shouldSort: true,
-    // // includeMatches: false,
-    // findAllMatches: true,
-    // minMatchCharLength: 2,
-    // // location: 0,
-    // threshold: 0.4,
-    // // distance: 100,
-    // // useExtendedSearch: false,
-    // ignoreLocation: true,
-    // // ignoreFieldNorm: false,
-    // // fieldNormWeight: 1,
+    // isCaseSensitive: false,
+    // includeScore: false,
+    // shouldSort: true,
+    // includeMatches: false,
+    findAllMatches: true,
+    minMatchCharLength: 2,
+    // location: 0,
+    threshold: 0.4,
+    // distance: 100,
+    // useExtendedSearch: false,
+    ignoreLocation: true,
+    // ignoreFieldNorm: false,
+    // fieldNormWeight: 1,
     keys: [
       "title", // default weight 1
       {name: "summary", weight: 0.8},
