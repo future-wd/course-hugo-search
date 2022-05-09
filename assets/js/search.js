@@ -81,64 +81,88 @@ function search(data) {
       "title", // default weight 1
       {name: "summary", weight: 0.8},
       { name: "content", weight: 0.6 },
-      { name: "companies", weight: 0.4},
-      { name: "species", weight: 0.4},
+      { name: "companies.title", weight: 0.4},
+      { name: "species.title", weight: 0.4},
      ]
   };
   // new fuse instance
   const fuse = new Fuse(data, options);
   // search results (object)
   const results = fuse.search(searchQuery);
-  console.log(`original results: ${JSON.stringify(results)}`);
-  //showResults(results);
+  //console.log(`original results: ${JSON.stringify(results)}`);
+  showResults(results);
   //const res = highlight(fuse.search(text)); // array of items with highlighted fields
-  showResults(highlight(results));
+  //showResults(highlight(results));
 }
 
 
 const highlight = (fuseSearchResult, highlightClassName = 'mark') => {
-  const set = (obj, path, value) => {
-      const pathValue = path.split('.');
+  const set = (obj, key, value) => { // does not take into account arrays (where refIndex is present)
+      const keySplit = key.split('.');
+      console.log(`iteration for ${key}`)
+      //console.log(`type: ${typeof keySplit}`)
+      console.log(`keySplit: ${keySplit}`)
+      console.log(`keySplit length: ${keySplit.length}`)
       let i;
-
-      for (i = 0; i < pathValue.length - 1; i++) {
-        obj = obj[pathValue[i]];
+      // run loop if path has a . in it
+      // run loop for all but last element in array
+      for (i = 0; i < keySplit.length - 1; i++) {
+        console.log(`loop completed for ${keySplit[i]}`)
+        obj = obj[keySplit[i]];
+        //console.log(`i: ${i}`)
+        console.log(`obj: ${JSON.stringify(obj)}`)
+        console.log(`keySplit: ${keySplit}`)
+        console.log(`keySplit[1]: ${keySplit[1]}`)
+        console.log(`obj["${keySplit[1]}"]: ${obj[keySplit[1]]}`);
+        console.log(`obj["${keySplit[1]}"]: ${obj["title"]}`);
+        //console.log(`obj[keySplit[${i}]] = ${obj[keySplit[i]]}`)
       }
-
-      obj[pathValue[i]] = value;
+      console.log(`${obj[keySplit[i]]} now = ${value}`)
+      // substitute original value, with highlighted value
+      // i += 1;
+      console.log(`i: ${i}`)
+      console.log(`obj[keySplit[1]: ${obj[keySplit[1]]}`);
+      obj[keySplit[i]] = value;
   };
 
+  // use substring() to chop up text and add highlighting, based on regions
   const highlightText = (inputText, regions = []) => {
     let content = '';
     let startIndex = 0;
 
     regions.forEach(region => {
-      const lastRegionNextIndex = region[1] + 1;
+      const nextIndex = region[1] + 1; // add 1 so it works with substring()
 
       content += [
-        inputText.substring(startIndex, region[0]),
-        `<span class="${highlightClassName}">`,
-        inputText.substring(region[0], lastRegionNextIndex),
-        '</span>',
-      ].join('');
+        inputText.substring(startIndex, region[0]), // text before highlight, up to start index
+        `<span class="${highlightClassName}">`, // open tag
+        inputText.substring(region[0], nextIndex), //text to highlight
+        '</span>', //close tag
+      ].join(''); // convert array to string
 
-      startIndex = lastRegionNextIndex;
+      startIndex = nextIndex; // startIndex becomes the current nextIndex, ready for the next iteration
     });
 
-    content += inputText.substring(startIndex);
+    content += inputText.substring(startIndex); // add the left over text, which is after the last highlight
 
     return content;
   };
-
+   console.log(`results: ${JSON.stringify(fuseSearchResult)}`)
   return  fuseSearchResult
     .filter(({ matches }) => matches && matches.length)
     .map(({ item, matches }) => {
-      const highlightedItem = { ...item };
+      const highlightedItem = { ...item }; // search result item
+      // console.log(`highlightedItem: ${JSON.stringify(highlightedItem)}`)
 
       matches.forEach((match) => {
+        // console.log(match.key)
         set(highlightedItem, match.key, highlightText(match.value, match.indices));
+        // console.log(`${highlightedItem[match.key]} now = ${highlightText(match.value, match.indices)}`)
+        // highlightedItem[match.key] = highlightText(match.value, match.indices);
+        
+        // console.log(`highlighted item ${JSON.stringify(highlightedItem[match.key])}`);
       });
-
+      
       return highlightedItem;
     });
 };
@@ -156,7 +180,7 @@ function showResults(results) {
     searchResults.innerHTML = 'No results found';
   } else { // results found
     searchResults.innerHTML = ''; // clear DIV
-    results.forEach(element => {
+    highlight(results).forEach(element => {
       //const {title, image, summary, permalink, content, companies, species} = element.item;
       const {title, image, summary, permalink, content, companies, species} = element;
       function taxonomyHTML(taxonomy, titleSingle, titlePlural) {
