@@ -26,6 +26,7 @@ const searchResults = document.getElementById('js-searchResults');
 {{- end -}}
 // write json data to file
 const searchIndex = {{ $scratch.Get "index" | jsonify }};
+// console.log(`Search Index: ${JSON.stringify(searchIndex)}`);
 
 // ***********************
 // search params function
@@ -73,8 +74,8 @@ function search(data, pattern) {
       "title", // default weight 1
       {name: "summary", weight: 0.8},
       { name: "content", weight: 0.6 },
-      { name: "companies", weight: 0.4},
-      { name: "species", weight: 0.4},
+      { name: "companies.title", weight: 0.4},
+      { name: "species.title", weight: 0.4},
      ]
   };
   // new fuse instance
