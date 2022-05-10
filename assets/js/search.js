@@ -109,7 +109,8 @@ function showResults(results) {
           // generate HTML
           taxonomyHTML = `
           <div class="pb-1">
-            <small>${taxonomyTitle}: ${taxonomyArray.join(', ')}</small>`;
+            <small>${taxonomyTitle}: ${taxonomyArray.join(', ')}</small>
+          </div>`;
         }
         return taxonomyHTML;
       }
