@@ -81,8 +81,8 @@ function search(data) {
       "title", // default weight 1
       {name: "summary", weight: 0.8},
       { name: "content", weight: 0.6 },
-      { name: "companies", weight: 0.4},
-      { name: "species", weight: 0.4},
+      { name: "companies.title", weight: 0.4},
+      { name: "species.title", weight: 0.4},
      ]
   };
   // new fuse instance
@@ -116,7 +116,8 @@ function showResults(results) {
           // generate HTML
           taxonomyHTML = `
           <div class="pb-1">
-            <small>${taxonomyTitle}: ${taxonomyArray.join(', ')}</small>`;
+            <small>${taxonomyTitle}: ${taxonomyArray.join(', ')}</small>
+          </div>`;
         }
         return taxonomyHTML;
       }
