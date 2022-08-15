@@ -4,10 +4,29 @@
     <div class="row">
       <div class="col">
         {{ partial "title" . }}
-        <div class="py-3">{{ .Content | markdownify }}</div>
+      </div>
+    </div>
+    <div class="row">
+    {{ $image := false }}
+    {{- if .Params.images -}}
+      {{- if ge (len .Params.images) 1 -}}
+        {{- with .Resources.GetMatch (index .Params.images 0) -}}
+          {{- $image = .Resize "200x" -}}
+          {{- $image = $image.RelPermalink -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{ if $image }}
+      <div class="col-sm-4 col-md-2">
+        <img src="{{ $image }}" alt="{{ .Title }}" class="img-fluid">
+      </div>
+    {{ end }}
+      <div class="col-sm-8 col-md-10">
+        {{ .Content }}
       </div>
     </div>
   </div>
 </section>
 
 {{ end }}
+

@@ -2,7 +2,7 @@
 title: "Wormulon Queen"
 companies: ["Slurm"]
 species: ["slurm worm"]
-images: ["Wormulon_Queen"]
+images: ["Wormulon_Queen.jpg"]
 source: https://futurama.fandom.com/
 ---
 The Slurm Queen is seen when Fry and the rest of the Planet Express crew won a trip to see the Slurm Factory. She then proceeds to act as an antagonist by setting up death traps.
