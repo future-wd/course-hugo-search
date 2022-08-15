@@ -3,7 +3,6 @@ import Fuse from 'fuse.js/dist/fuse.basic.esm.js'
 const searchInput = document.getElementById('js-searchInput');
 const searchResults = document.getElementById('js-searchResults');
 
-
 // ***********************
 // search index (JSON)
 //
@@ -30,15 +29,46 @@ function params(name) {
 
 // ***********************
 // check to see if a search has taken place
+//
 const searchQuery = params('q');
 if (searchQuery) {
   // add the query to search input
   searchInput.value = searchQuery;
   searchResults.innerHTML = 'Loading...';
   // run the search
+  search(searchIndex, searchQuery);
 } else { // no search query
   searchResults.innerHTML = 'Please input your search into the search box above.';
 }
 
 
-
+// ***********************
+// run search
+//
+function search(data, pattern) {
+  const options = {
+    // isCaseSensitive: false,
+    // includeScore: false,
+    // shouldSort: true,
+    // includeMatches: false,
+    findAllMatches: true,
+    minMatchCharLength: 2,
+    // location: 0,
+    threshold: 0.4,
+    // distance: 100,
+    // useExtendedSearch: false,
+    ignoreLocation: true,
+    // ignoreFieldNorm: false,
+    // fieldNormWeight: 1,
+    keys: [
+      "title", // default weight 1
+      {name: "summary", weight: 0.8},
+      { name: "content", weight: 0.6 },
+      { name: "companies", weight: 0.4},
+      { name: "species", weight: 0.4},
+     ]
+  };
+  const fuse = new Fuse(data, options);
+  const results = fuse.search(pattern);
+  console.log(`RESULTS: ${JSON.stringify(results)}`);
+}
