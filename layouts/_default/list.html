@@ -4,11 +4,11 @@
     <div class="row">
       <div class="col">
         {{ partial "title" . }}
-        <div class="py-3">{{ .Content | markdownify }}</div>
+        <div class="py-3">{{ .Content }}</div>
       </div>
     </div>
     {{ range .Paginator.Pages }}
-    <div class="row">
+    <div class="row pb-3">
       {{ if .Params.images }}
       <div class="col-sm-2">
         {{ with .Resources.GetMatch (index .Params.images 0) }}
