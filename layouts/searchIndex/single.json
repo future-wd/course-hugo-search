@@ -24,4 +24,4 @@
   {{- end -}}
   {{- $scratch.Add "index" (dict "title" .Title "image" $image "summary" .Summary "content" .Plain "companies" $companies "species" $species "permalink" .Permalink) -}}
 {{- end -}}
-{{ $scratch.Get "index" | jsonify }}
+{{ $scratch.Get "index" | jsonify (dict "indent" "  ") }}

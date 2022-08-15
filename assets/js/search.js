@@ -64,19 +64,19 @@ if (searchQuery) {
 //
 function search(data) {
   const options = {
-    // // isCaseSensitive: false,
-    // // includeScore: false,
-    // // shouldSort: true,
-    includeMatches: true,
-    // findAllMatches: true,
+    // isCaseSensitive: false,
+    // includeScore: false,
+    // shouldSort: true,
+    // includeMatches: false,
+    findAllMatches: true,
     minMatchCharLength: 2,
-    // // location: 0,
-    // threshold: 0.4,
-    // // distance: 100,
-    // // useExtendedSearch: false,
-    // ignoreLocation: true,
-    // // ignoreFieldNorm: false,
-    // // fieldNormWeight: 1,
+    // location: 0,
+    threshold: 0.4,
+    // distance: 100,
+    // useExtendedSearch: false,
+    ignoreLocation: true,
+    // ignoreFieldNorm: false,
+    // fieldNormWeight: 1,
     keys: [
       "title", // default weight 1
       {name: "summary", weight: 0.8},
@@ -198,7 +198,8 @@ function showResults(results) {
           // generate HTML
           taxonomyHTML = `
           <div class="pb-1">
-            <small>${taxonomyTitle}: ${taxonomyArray.join(', ')}</small>`;
+            <small>${taxonomyTitle}: ${taxonomyArray.join(', ')}</small>
+          </div>`;
         }
         return taxonomyHTML;
       }
